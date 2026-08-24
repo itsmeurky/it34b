@@ -1,8 +1,8 @@
 <?php
-    function logActivity($pdo,$user_id,$user_email,$action $status= 'success') {
+    function logActivity($pdo,$user_id,$user_email,$action, $status= 'success') {
     try{
         // get client IP address
-        $ip_address = $_SERVER['HTTPS_X_FORWARDER_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+        $ip = $_SERVER['HTTPS_X_FORWARDER_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
         
         //String to array
         if(strpos($ip, ',') !== false){
@@ -19,11 +19,22 @@
             user_email,
             activity_log_action,
             activity_log_status,
-            activity_log_status,
             activity_log_ip_address,
-            activity_log_user_agent,
-            ) VALUES ( ?, ?, ?, ?, ?, ?)
+            activity_log_user_agent
+            ) VALUES (?,?,?,?,?,?)
         ");
+
+        $success = $stmt->execute([
+            $user_id,
+            $user_email,
+            $action,
+            $status,
+            $ip,
+            $user_agent
+        ]);
+
+        return $success;
+
     } catch (PDOexception $e){
         error_log("activity Log Error: " . $e->getMessage());
         return false;
