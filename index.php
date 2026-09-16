@@ -1,74 +1,62 @@
 <?php
-    require_once 'config/config.php';
+require_once 'config/config.php';
+require_once 'config/functions.php';
+if (isset($_SESSION['user_id'])) {
+    header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
+    exit;
+}
+
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $login = trim($_POST['login'] ?? '');
+    $password = trim($_POST['password']) ?? '';
 
 
-    $user_id = "root" ?? null;
-    $user_email = "root" ?? null;
 
 
-    $buttons = [
-        'Login',
-        'Logout',
-        'Create Rcord',
-        'Update Record',
-        'Delete Record',
-        'view Record',
-        'Upload File',
-        'Download',
-        'Search',
-        'Generate Report'
+    $error = 'Invalid login credentials';
 
-    ];
-    
-
-?>
-
-<table boarder="1" cellpadding="10">
-    <tr>
-        <th>Action</th>
-        <th>Test</th>
-</tr>
-        <?php foreach($buttons as $button): ?>
-            <tr>
-                <td><?=htmlspecialchars($button) ?></td>
-                <td>
-                    <form method="post">
-                    <input type="hidden" name="action"
-                    value="<?=htmlspecialchars($button) ?>"
-                >
-                    <button type="submit">Test</button>
-                </form>
-
-            </td>
-        </tr>
-    <?php endforeach; ?>
-
-</table>
-
-
-<?php
-if($_SERVER['REQUEST_METHOD'] === 'POST'){
-
-    $action = $_POST['action'] ?? "test_activity";
-
-            $status = random_int(0,1) === 1? 'success' : 'failed';
-
-
-            $success = logActivity(
-                $pdo,
-                $user_id,
-                $user_email,
-                $action,
-                $status
-            );
-    
-        if($success){
-            echo "<p>Activity: " . htmlspecialchars($action) . 
-            "status: " . htmlspecialchars($status) .
-            " Log  inserted successfully </p>";
-        } else {
-            echo "<p>Failed to insert activity log</p>";
+    if ($login === '' || $password === '') {
+        // Log incomplete log
+        logActivity($pdo, null, $login, 'login', 'failed');
+    } else {
+     
+        if (loginUser($pdo, $login, $password)) {
+            logActivity($pdo, $_SESSION['user_id'], $_SESSION['user_email'], 'login', 'success');
+            header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
+            exit;
         }
+    }
 }
 
 ?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+
+    <form method="POST">
+        <label>Username or Email</label>
+        <input type="text"
+            name="login">
+        <br>
+        <br>
+        <label>Password</label>
+        <input type="password"
+            name="password">
+
+        <br>
+        <button type="submit">Sign In</button>
+
+    </form>
+</body>
+
+</html>
