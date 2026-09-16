@@ -18,10 +18,6 @@ $stmt = $pdo->query("
 $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
-
-
-
-
 ?>
 
 <!DOCTYPE html>
@@ -31,10 +27,62 @@ $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
+    <style>
+body {
+    font-family: Arial, sans-serif;
+    background: #fafdfa;
+    padding: 30px;
+}
+
+h1 {
+    color: #b0ed8c;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 4px 10px #b8b0b0;
+}
+
+th {
+    background: #425f32;
+    color: white;
+    padding: 12px;
+}
+
+td {
+    padding: 10px;
+    border-bottom: 1px solid #97dfae;
+    text-align: center;
+}
+
+tr:hover {
+    background: #eaf3ff;
+}
+
+a {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 8px 15px;
+    background: #425f32;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+a:hover {
+    background: #425f32; 
+    .table tbody tr.hover{
+        background-color: #090d06;
+    }
+
+}
+</style>
 </head>
 
 <body>
-    <h1>Welcome Admin</h1>
+    <h1>Welcome, Admin!</h1>
     <a href="../../auth/signout.php">Sign Out</a>
     <table border="1">
         <thead>
@@ -70,11 +118,3 @@ $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <script src="https://cdn.datatables.net/3.0.4/js/dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/3.0.4/js/dataTables.bootstrap5.min.js"></script>
 </html>
-
-
-
-In addition to the above code, the following Javascript library files are loaded for use in this example:
-
-https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.8/js/bootstrap.bundle.min.js
-https://cdn.datatables.net/3.0.4/js/dataTables.min.js
-https://cdn.datatables.net/3.0.4/js/dataTables.bootstrap5.min.js
