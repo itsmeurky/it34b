@@ -1,7 +1,6 @@
 <?php
 
 require '../../config/config.php';
-require '../../config/functions.php';
 
 
 requireRole('admin');
@@ -58,7 +57,7 @@ td {
 }
 
 tr:hover {
-    background: #eaf3ff;
+    background: #a6bca1;
 }
 
 a {
