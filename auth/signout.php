@@ -8,9 +8,9 @@ require_once '../config/config.php';
             $_SESSION['user_email'],
             'logout',
             'success'
-            
-             );
-    }
+
+        );
+}
 
     endUserSession($pdo);
 
