@@ -1,65 +1,112 @@
+
 <?php
-
 require '../../config/config.php';
-
 
 requireRole('admin');
 
-logActivity($pdo, $_SESSION['user_id'], $_SESSION['user_email'], 'view_activity_logs', 'success');
+$section = $_GET['section'] ?? '';
 
-// Activity Logs Query Query #3
+$action = $_GET['action'] ?? '';
 
-$stmt = $pdo->query("
-    SELECT * FROM activity_logs ORDER BY activity_log_created_at DESC
-");
+if ($section === 'activity-logs'){
+        // Activity Logs Query
+        $stmt = $pdo->query("
+        SELECT * 
+        FROM activity_logs
+        ORDER BY activity_log_created_at DESC
+    ");
 
+    $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} elseif ($section === 'user-sessions') {
 
+    // User Sessions Query
+    $stmt = $pdo->query("
+        SELECT
+            us.session_id,
+            us.user_id,
+            u.user_username,
+            u.user_email,
+            u.user_role,
+            us.session_start,
+            us.session_end,
+            us.session_duration
+        FROM user_sessions us
+        INNER JOIN users u
+            ON us.user_id = u.user_id
+        ORDER BY us.session_start DESC
+    ");
+
+    $sessions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=, initial-scale=1.0">
     <title>Admin Panel</title>
-    <style>
+
+ 
+<style>
 body {
     font-family: Arial, sans-serif;
-    background: #fafdfa;
+    background: #173d2a;
     padding: 30px;
+    color: white;
 }
 
 h1 {
     color: #b0ed8c;
 }
 
+h4 {
+    color: #b0ed8c;
+    margin-top: 30px;
+}
+
+/* Table Design */
 table {
     width: 100%;
     border-collapse: collapse;
     background: white;
-    box-shadow: 0 4px 10px #b8b0b0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    border-radius: 5px;
+    overflow: hidden;
 }
 
+/* Table Headings */
 th {
     background: #425f32;
     color: white;
     padding: 12px;
+    text-align: center;
 }
 
+/* Table Data */
 td {
     padding: 10px;
     border-bottom: 1px solid #97dfae;
     text-align: center;
+    color: #263b28;
 }
 
-tr:hover {
+/* Alternating Table Rows */
+tbody tr:nth-child(even) {
+    background: #f0f7ed;
+}
+
+tbody tr:nth-child(odd) {
+    background: white;
+}
+
+/* Hover Effect */
+tbody tr:hover {
     background: #a6bca1;
 }
 
+/* Navigation and Sign Out Links */
 a {
     display: inline-block;
     margin-bottom: 20px;
@@ -68,52 +115,199 @@ a {
     color: white;
     text-decoration: none;
     border-radius: 5px;
+    transition: background 0.3s ease;
 }
 
 a:hover {
-    background: #425f32; 
-    .table tbody tr.hover{
-        background-color: #090d06;
+    background: #63864d;
+}
+
+/* Responsive Table */
+@media screen and (max-width: 768px) {
+    body {
+        padding: 15px;
     }
 
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
 }
 </style>
+
 </head>
-
 <body>
-    <h1>Welcome, Admin!</h1>
-    <a href="../../auth/signout.php">Sign Out</a>
-    <table border="1">
-        <thead>
-            <tr>
+        <h1>Welcome, Admin!</h1>
 
-                <th>Record ID</th>
-                <th>User ID</th>
-                <th>User Email</th>
-                <th>Action</th>
-                <th>Status</th>
-                <th>IP Address</th>
-                <th>User Agent</th>
-                <th>Date & Time</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($activities as $activity): ?>
+        <a href="../../auth/signout.php" class="btn btn-danger">
+            Sign Out
+        </a>
+        <hr>
+
+    <nav>
+        <a href="index.php?section=activity-logs" class="btn btn-primary">Activity Logs </a>
+        <a href="index.php?section=user-sessions" class="btn btn-primary">User Sessions </a>
+    </nav>
+
+    <?php if ($section === 'activity-logs'): ?>
+
+        <h4>Activity Logs</h4>
+
+        <table>
+
+            <thead>
                 <tr>
-                    <td><?= htmlspecialchars($activity['activity_log_id']); ?></td>
-                    <td><?= htmlspecialchars($activity['user_id']); ?></td>
-                    <td><?= htmlspecialchars($activity['user_email']); ?></td>
-                    <td><?= htmlspecialchars($activity['activity_log_action']); ?></td>
-                    <td><?= htmlspecialchars($activity['activity_log_status']); ?></td>
-                    <td><?= htmlspecialchars($activity['activity_log_ip_address']); ?></td>
-                    <td><?= htmlspecialchars($activity['activity_log_user_agent']); ?></td>
-                    <td><?= htmlspecialchars($activity['activity_log_created_at']); ?></td>
+                    <th>Record ID</th>
+                    <th>User ID</th>
+                    <th>User Email</th>
+                    <th>Action</th>
+                    <th>Status</th>
+                    <th>IP Address</th>
+                    <th>User Agent</th>
+                    <th>Date & Time</th>
                 </tr>
-            <?php endforeach; ?>
+            </thead>
 
-    </table>
+            <tbody>
+
+                <?php foreach ($activities as $activity): ?>
+
+                    <tr>
+                        <td>
+                            <?= htmlspecialchars($activity['activity_log_id']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($activity['user_id']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($activity['user_email']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($activity['activity_log_action']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($activity['activity_log_status']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($activity['activity_log_ip_address']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($activity['activity_log_user_agent']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($activity['activity_log_created_at']) ?>
+                        </td>
+                    </tr>
+
+                <?php endforeach; ?>
+
+            </tbody>
+
+        </table>
+
+    <?php endif; ?>
+
+    <?php if ($section === 'user-sessions'): ?>
+
+        <h4>User Sessions</h4>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Session ID</th>
+                    <th>User ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Session Start</th>
+                    <th>Session End</th>
+                    <th>Duration</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <?php foreach ($sessions as $session): ?>
+
+                    <tr>
+
+                        <td>
+                            <?= htmlspecialchars($session['session_id']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($session['user_id']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($session['user_username']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($session['user_email']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($session['user_role']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($session['session_start']) ?>
+                        </td>
+
+                        <td>
+                            <?= $session['session_end']
+                                ? htmlspecialchars($session['session_end'])
+                                : 'Active'
+                            ?>
+                        </td>
+
+                        <td>
+
+                            <?php
+
+                            if ($session['session_duration'] !== null) {
+
+                                $seconds = (int) $session['session_duration'];
+
+                                $hours = floor($seconds / 3600);
+                                $minutes = floor(($seconds % 3600) / 60);
+                                $seconds = $seconds % 60;
+
+                                echo sprintf(
+                                    '%02d hr %02d min %02d sec',
+                                    $hours,
+                                    $minutes,
+                                    $seconds
+                                );
+
+                            } else {
+
+                                echo 'Active';
+
+                            }
+
+                            ?>
+
+                        </td>
+
+                    </tr>
+
+                <?php endforeach; ?>
+
+            </tbody>
+
+        </table>
+
+    <?php endif; ?>
 </body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/3.0.4/js/dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/3.0.4/js/dataTables.bootstrap5.min.js"></script>
 </html>
