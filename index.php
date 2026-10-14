@@ -40,7 +40,7 @@ if($_SERVER['REQUEST_METHOD'] ==='POST'){
         }elseif($result==='active_session'){
             echo 'This account is already logged in on another device';
             
-            $error = 'This account is already looged in on another device';
+            $error = 'This account is already logged in on another device';
         
         }else{
             
@@ -78,7 +78,7 @@ if($_SERVER['REQUEST_METHOD'] ==='POST'){
     
 
 <?php if(isset($_GET['timeout'])): ?>
-    <p> Yor session has expired due to inactivity. Please log in again</p>
+    <p> Your session has expired due to inactivity. Please log in again</p>
 <?php endif; ?>
 
 </body>
