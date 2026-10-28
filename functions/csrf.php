@@ -1,8 +1,8 @@
 <?php
 // Generate CSRK token
 function generateCsrfToken(){
-    if(empty($_SESION['csrf_token'])){
-        $_SESION['csrf_token'] = bin2hex(random_bytes(32));
+    if(empty($_SESSION['csrf_token'])){
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
     }
         return $_SESSION['csrf_token'];
@@ -11,13 +11,13 @@ function generateCsrfToken(){
 //verify CSRF token
 function verifyCsrfToken($token){
 
-    if(empty($_SESION['csrf_token']) empty($token)
-        ){
+    if(empty($_SESSION['csrf_token']) || empty($token)){
+    
             return false;    
     }
 
     return hash_equals(
-        $_SESION['csrf_token'], $token
+        $_SESSION['csrf_token'], $token
     );
 }
 
